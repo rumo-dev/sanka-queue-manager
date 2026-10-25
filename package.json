@@ -1,6 +1,6 @@
 {
   "name": "twitch-queue-manager",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Twitch参加型配信 キュー管理ツール (OBS連携対応)",
   "main": "main.js",
   "author": {
