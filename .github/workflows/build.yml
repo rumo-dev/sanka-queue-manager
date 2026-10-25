@@ -25,11 +25,11 @@ jobs:
         with:
           node-version: 20
       - run: npm install
-      - name: Build (手動実行: 公開しない)
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+      - name: "Build (手動実行・公開しない)"
+        if: github.ref_type != 'tag'
         run: npm run dist:${{ matrix.target }}
-      - name: Build & Release (タグ: GitHub Releases に公開)
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+      - name: "Build & Release (タグ時のみ・GitHub Releases に公開)"
+        if: github.ref_type == 'tag'
         run: npm run release:${{ matrix.target }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
