@@ -8,6 +8,8 @@ const OPS = require(path.join(__dirname, '..', 'web', 'ops-defs.js'));
 
 const DEFAULTS = {
   clientId: '',
+  platform: 'twitch',
+  youtubeVideo: '',
   mode: 'chat',        // chat | points | both
   command: '!参加',
   rewardTitle: '',
@@ -20,7 +22,7 @@ const DEFAULTS = {
   joinRules: OPS.JOIN_DEFAULTS, // 参加条件
   ui: OPS.UI_DEFAULTS,         // 音・ホットキー
 };
-const PLAIN_KEYS = ['clientId', 'mode', 'command', 'rewardTitle', 'limit', 'slots', 'onboarded', 'autoUpdate'];
+const PLAIN_KEYS = ['clientId', 'platform', 'youtubeVideo', 'mode', 'command', 'rewardTitle', 'limit', 'slots', 'onboarded', 'autoUpdate'];
 const REMOTE_OK = ['plus1', 'plus1All', 'swap', 'swapLimit', 'swapFirst', 'removeLimit', 'up', 'down', 'remove', 'clear', 'undo',
   'accept', 'toggleAccept', 'add', 'block', 'settings'];   // ドック等(ネットワーク経由)から許可する操作
 
@@ -243,6 +245,8 @@ class Store extends EventEmitter {
       case 'settings': {
         const p = a.settings || {};
         for (const k of PLAIN_KEYS) if (k in p) s[k] = p[k];
+        s.platform = ['youtube', 'both'].includes(s.platform) ? s.platform : 'twitch';
+        s.youtubeVideo = str(s.youtubeVideo, 300);
         if (p.overlay) s.overlay = OVERLAY.clean({ ...s.overlay, ...p.overlay });
         if (p.joinRules) s.joinRules = OPS.cleanJoin({ ...s.joinRules, ...p.joinRules });
         if (p.ui) {

@@ -7,10 +7,11 @@ const path = require('path');
 const { Store } = require('./src/store');
 const { startServer } = require('./src/server');
 const { Twitch } = require('./src/twitch');
+const { YouTubeChat } = require('./src/youtube');
 const { DEFAULT_CLIENT_ID, AUTH_REDIRECT, BASE_PORT } = require('./src/config');
 
 const SCOPES = 'chat:read channel:read:redemptions';
-let win, store, twitch, port = BASE_PORT, assetsDir;
+let win, store, twitch, youtube, port = BASE_PORT, assetsDir;
 let mini = false, pinned = false, normalBounds = null;
 
 // 二重起動の防止 (ポート競合・二重受付の原因になる)
@@ -211,6 +212,7 @@ function createWindow() {
 app.whenReady().then(async () => {
   store = new Store(path.join(app.getPath('userData'), 'state.json'));
   twitch = new Twitch(store);
+  youtube = new YouTubeChat(store);
   try {
     assetsDir = path.join(app.getPath('userData'), 'assets');
     fs.mkdirSync(assetsDir, { recursive: true });
@@ -301,10 +303,14 @@ app.whenReady().then(async () => {
   writeLauncher();
   createWindow();
   store.on('change', () => {
+    if (store.data.settings.platform === 'youtube') twitch.disconnect();
+    else if (store.data.auth && twitch.stopped) twitch.connect();
+    youtube.sync();
     if (win && !win.isDestroyed()) win.webContents.send('state', store.publicState());
     applyHotkeys();
   });
   applyHotkeys();
+  youtube.sync();
   setupUpdater();
 
   // 保存済みトークンで自動ログイン
@@ -317,5 +323,5 @@ app.whenReady().then(async () => {
   }
 });
 
-app.on('will-quit', () => { globalShortcut.unregisterAll(); clearInterval(updateTimer); });
+app.on('will-quit', () => { globalShortcut.unregisterAll(); clearInterval(updateTimer); if (youtube) youtube.stop(); });
 app.on('window-all-closed', () => app.quit());

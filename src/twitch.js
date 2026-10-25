@@ -13,7 +13,7 @@ class Twitch {
 
   connect() {
     this.disconnect();
-    if (!this.store.data.auth) return;
+    if (!this.store.data.auth || this.store.data.settings.platform === 'youtube') return;
     this.stopped = false;
     this.openIrc();
     this.openEventSub();
@@ -72,6 +72,7 @@ class Twitch {
     const m = line.match(/^@(\S+) :([^!]+)![^ ]+ PRIVMSG #\S+ :(.*)$/);
     if (!m) return;
     const s = this.store.data.settings;
+    if (s.platform === 'youtube') return;
     if (s.mode === 'points') return;
     const tags = Object.fromEntries(m[1].split(';').map((kv) => {
       const i = kv.indexOf('=');

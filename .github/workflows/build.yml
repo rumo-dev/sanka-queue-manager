@@ -1,7 +1,7 @@
 # ■ 手動実行 (Actions タブ → Run workflow): Windows / macOS / Linux 向けを全てビルドし、Artifacts からダウンロードできます。
-# ■ バージョンタグ (例: v1.2.0) を push: ビルドして GitHub Releases に公開します。
+# ■ バージョンタグ (例: v1.3.0) を push: ビルドして GitHub Releases に公開します。
 #    アプリの「自動アップデート」は、この Releases を見て新しい版を配ります。
-#    手順: package.json の version を上げる → コミット → `git tag v1.2.0 && git push --tags`
+#    手順: package.json の version を上げる → コミット → `git tag v1.3.0 && git push --tags`
 name: build
 on:
   push:

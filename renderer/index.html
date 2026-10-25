@@ -42,6 +42,11 @@
       <details class="box" open>
         <summary>受付設定</summary>
         <div class="inner">
+          <label>コメント元
+            <select id="platform"><option value="twitch">Twitch</option><option value="youtube">YouTubeライブ</option><option value="both">Twitch + YouTube</option></select>
+          </label>
+          <label id="youtube-row" hidden>YouTubeライブ配信URL / 動画ID <input id="youtubeVideo" placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX"></label>
+          <p id="youtube-note" class="small dim" hidden>公式APIキー不要。ライブチャット画面からコメントを読み取ります。「Twitch + YouTube」ではTwitchにもログインしてください。YouTubeメンバー判定には対応しません。</p>
           <label>受付方法
             <select id="mode">
               <option value="chat">コメント</option>
@@ -50,7 +55,7 @@
             </select>
           </label>
           <label>参加コメント <input id="command" placeholder="!参加"></label>
-          <label>報酬名 (チャンネルポイント) <input id="rewardTitle" placeholder="参加したい！"></label>
+          <label id="reward-row">報酬名 (チャンネルポイント) <input id="rewardTitle" placeholder="参加したい！"></label>
           <div class="bar"><button id="save" class="primary">設定を保存</button><span id="saved" class="dim small"></span></div>
           <details class="small dim">
             <summary>詳細設定 (通常は不要)</summary>

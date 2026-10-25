@@ -1,5 +1,5 @@
 const $ = (id) => document.getElementById(id);
-const fields = ['clientId', 'mode', 'command', 'rewardTitle'];
+const fields = ['clientId', 'platform', 'youtubeVideo', 'mode', 'command', 'rewardTitle'];
 let urls, formLoaded = false;
 
 Panel.mount($('queue'), {
@@ -31,6 +31,7 @@ function onState(s) {
   if (!formLoaded) { // 入力中の値を上書きしないよう初回のみ反映
     fields.forEach((f) => { $(f).value = s.settings[f]; });
     formLoaded = true;
+    updatePlatformFields();
   }
 }
 api.getState().then(onState);
@@ -55,12 +56,24 @@ $('save').onclick = async () => {
   await api.action({ type: 'settings', settings });
   flash($('saved'), '保存しました');
 };
+function updatePlatformFields() {
+  const platform = $('platform').value;
+  const youtube = platform === 'youtube';
+  const youtubeEnabled = youtube || platform === 'both';
+  $('youtube-row').hidden = !youtubeEnabled;
+  $('youtube-note').hidden = !youtubeEnabled;
+  $('reward-row').hidden = youtube;
+  if (youtube && $('mode').value !== 'chat') $('mode').value = 'chat';
+  $('mode').disabled = youtube;
+}
+$('platform').onchange = updatePlatformFields;
 $('login').onclick = async () => {
   await $('save').onclick();
   const r = await api.login();
   if (!r.ok) $('status').textContent = r.error;
 };
 $('logout').onclick = () => api.logout();
+updatePlatformFields();
 
 // サイドバーのタブ切り替え
 document.querySelectorAll('.tab').forEach((t) => {
