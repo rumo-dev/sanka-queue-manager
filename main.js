@@ -170,8 +170,17 @@ function sendUpdate(patch) {
   if (win && !win.isDestroyed()) win.webContents.send('update', updateInfo);
 }
 function releasesUrl() {
-  const pub = ((require('./package.json').build || {}).publish || [])[0] || {};
-  return pub.owner && pub.repo && pub.owner !== 'YOUR_GITHUB_USER' ? `https://github.com/${pub.owner}/${pub.repo}/releases/latest` : '';
+  // electron-builder removes the `build` section from the packaged package.json.
+  // The publisher is written to resources/app-update.yml, so read that in packaged apps.
+  let pub = ((require('./package.json').build || {}).publish || [])[0] || {};
+  if (app.isPackaged) {
+    try {
+      const updateConfig = fs.readFileSync(path.join(process.resourcesPath, 'app-update.yml'), 'utf8');
+      const value = (key) => (updateConfig.match(new RegExp(`^${key}:\\s*["']?([^\\r\\n"']+)`, 'm')) || [])[1] || '';
+      pub = { provider: value('provider'), owner: value('owner'), repo: value('repo') };
+    } catch { pub = {}; }
+  }
+  return pub.provider === 'github' && pub.owner && pub.repo && pub.owner !== 'YOUR_GITHUB_USER' ? `https://github.com/${pub.owner}/${pub.repo}/releases/latest` : '';
 }
 function setupUpdater() {
   if (!app.isPackaged) return sendUpdate({ state: 'disabled', message: '開発中は自動更新を使えません' });

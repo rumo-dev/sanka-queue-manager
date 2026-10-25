@@ -70,7 +70,7 @@ Twitch参加型配信の参加者キュー管理 (Electron / Windows・macOS・L
 - 初めて起動すると、ログイン → 参加方法 → OBS表示 (接続を自動検知) → 動作テスト (テスト参加者の追加) のガイドが出ます。「連携・設定」の下の「使い方ガイド」でいつでも再表示。
 - **自動アップデート** (GitHub Releases 利用): 配布者が1回だけ設定します。
   1. `package.json` の `build.publish` の `owner` / `repo` を自分のGitHubに変更
-  2. 新版を出す時は `version` を上げ、`git tag v1.3.0 && git push --tags` → GitHub Actions が3OSをビルドして Releases に公開
+  2. 新版を出す時は `version` を上げ、対応するタグ (例: `v1.3.1`) を push → GitHub Actions が3OSをビルドして Releases に公開
   3. 利用者のアプリが起動時と4時間ごとに確認し、自動ダウンロード → 「再起動して更新」
   - インストーラー版 (Windows NSIS / Linux AppImage / macOS) が対象です。**ポータブル版は自動更新できません**。
   - macOSの自動更新には、署名+公証済みのアプリが必要です (dmgに加えてzipも出力します)。
