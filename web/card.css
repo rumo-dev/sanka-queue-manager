@@ -1,0 +1,47 @@
+/* リッチカード (オーバーレイ / エディタ共通) */
+.card { position: relative; flex: none; box-sizing: border-box; --st: #6ea8ff; --frc: #6ea8ff; --ringc: #6ea8ff; --fw: 3px;
+  line-height: 1.2; color: #fff; }
+.card .cl { position: absolute; pointer-events: none; }
+.card .bg, .card .bgi, .card .fr, .card .fi { inset: 0; border-radius: inherit; }
+.card .bgi { overflow: hidden; }
+.card .bgi i { position: absolute; display: block; }
+.card .av { z-index: 3; }
+.card .avo, .card .avm, .card .avi { position: absolute; }
+.card .avo { inset: 0; }
+.card .avi { overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.card .avi img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.card .ini { color: #fff; font-weight: 800; font-family: sans-serif; }
+.card .avf { z-index: 4; background-repeat: no-repeat; background-position: center; background-size: contain; }
+.card .fi { z-index: 5; box-sizing: border-box; }
+.card .fr { z-index: 5; box-sizing: border-box; }
+.card .nm, .card .ct { z-index: 6; white-space: nowrap; }
+.card .nm span, .card .ct span { display: block; overflow: hidden; text-overflow: ellipsis; }
+.card .ct span.badge { display: inline-block; padding: .08em .7em; border-radius: 999px; font-weight: 800; }
+.card .ct { font-weight: 800; font-variant-numeric: tabular-nums; }
+
+/* フレームの種類 */
+.fr[data-fs="solid"] { border: var(--fw) solid var(--frc); }
+.fr[data-fs="double"] { border: var(--fw) solid var(--frc); }
+.fr[data-fs="double"]::after { content: ""; position: absolute; inset: calc(var(--fw) * 1.8); border: calc(var(--fw) * .6) solid var(--frc); border-radius: inherit; opacity: .9; }
+.fr[data-fs="inset"] { box-shadow: inset 0 0 0 var(--fw) var(--frc), inset 0 0 14px rgba(0, 0, 0, .6); }
+.fr[data-fs="neon"] { border: var(--fw) solid var(--frc); box-shadow: 0 0 10px var(--frc), inset 0 0 10px var(--frc); }
+.fr[data-fs="pixel"] { border: var(--fw) solid var(--frc); border-radius: 0; box-shadow: var(--fw) var(--fw) 0 rgba(0, 0, 0, .55); }
+.fr[data-fs="gold"] { border: var(--fw) solid transparent;
+  background: linear-gradient(135deg, #fff3b0, #d4a017 30%, #fff3b0 55%, #b8860b) border-box;
+  -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+.fr[data-fs="corners"] { --len: 26px;
+  background:
+    linear-gradient(var(--frc), var(--frc)) 0 0 / var(--len) var(--fw) no-repeat, linear-gradient(var(--frc), var(--frc)) 0 0 / var(--fw) var(--len) no-repeat,
+    linear-gradient(var(--frc), var(--frc)) 100% 0 / var(--len) var(--fw) no-repeat, linear-gradient(var(--frc), var(--frc)) 100% 0 / var(--fw) var(--len) no-repeat,
+    linear-gradient(var(--frc), var(--frc)) 0 100% / var(--len) var(--fw) no-repeat, linear-gradient(var(--frc), var(--frc)) 0 100% / var(--fw) var(--len) no-repeat,
+    linear-gradient(var(--frc), var(--frc)) 100% 100% / var(--len) var(--fw) no-repeat, linear-gradient(var(--frc), var(--frc)) 100% 100% / var(--fw) var(--len) no-repeat; }
+
+/* 上限 / 超過 */
+.card.glow { box-shadow: 0 0 18px var(--st); }
+@keyframes cardblink { 50% { opacity: .6; } }
+#root[data-blink="1"] .card.blink:not(.enter) { animation: cardblink 1.2s ease-in-out infinite; }
+.card.recruit .av, .card.recruit .avf, .card.recruit .ct { display: none; }
+
+/* エディタ: レイヤーをつかんで動かせる */
+.card.editing .av, .card.editing .nm, .card.editing .ct { pointer-events: auto; cursor: move; }
+.card.editing .av:hover, .card.editing .nm:hover, .card.editing .ct:hover { outline: 1px dashed rgba(255, 255, 255, .8); outline-offset: 2px; }

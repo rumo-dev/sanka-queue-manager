@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<title>Sanka Queue Manager</title>
+<link rel="stylesheet" href="../web/panel.css">
+<link rel="stylesheet" href="../web/card.css">
+<link rel="stylesheet" href="app.css"></head>
+<body>
+<main class="layout">
+  <section id="queue"></section>
+  <aside class="side">
+    <div id="upd-banner" class="banner" hidden></div>
+    <div class="tabs" role="tablist">
+      <button class="tab on" data-pane="pane-main" role="tab">連携・設定</button>
+      <button class="tab" data-pane="pane-people" role="tab">参加管理</button>
+      <button class="tab" data-pane="pane-design" role="tab">OBS見た目</button>
+      <button class="tab" data-pane="pane-cards" role="tab">カード</button>
+    </div>
+
+    <div id="pane-main" class="pane">
+      <details class="box" open>
+        <summary>Twitch</summary>
+        <div class="inner">
+          <p id="login-state" class="dim">未ログイン</p>
+          <p id="status" class="err"></p>
+          <div class="bar"><button id="login" class="primary">Twitchでログイン</button><button id="logout" class="ghost">ログアウト</button></div>
+        </div>
+      </details>
+
+      <details class="box" open>
+        <summary>OBS連携</summary>
+        <div class="inner">
+          <p class="small dim">① 下の枠をOBSの画面へドラッグ＆ドロップ (ブラウザソースとして追加されます)</p>
+          <a id="ovl" class="drag" draggable="true" href="#">オーバーレイをOBSへドラッグ</a>
+          <p class="small dim">ドロップできない場合: ソース＋ → ブラウザ → URLに貼り付け</p>
+          <div class="bar"><button id="copy-ovl">オーバーレイURLをコピー</button></div>
+          <p class="small dim">② 操作ドック: OBSの ドック → カスタムブラウザドック → URLに貼り付け</p>
+          <div class="bar"><button id="copy-dck">ドックURLをコピー</button></div>
+          <p class="small dim">見た目は「OBS見た目」タブで変更できます。</p>
+        </div>
+      </details>
+
+      <details class="box" open>
+        <summary>受付設定</summary>
+        <div class="inner">
+          <label>受付方法
+            <select id="mode">
+              <option value="chat">コメント</option>
+              <option value="points">チャンネルポイント</option>
+              <option value="both">両方</option>
+            </select>
+          </label>
+          <label>参加コメント <input id="command" placeholder="!参加"></label>
+          <label>報酬名 (チャンネルポイント) <input id="rewardTitle" placeholder="参加したい！"></label>
+          <div class="bar"><button id="save" class="primary">設定を保存</button><span id="saved" class="dim small"></span></div>
+          <details class="small dim">
+            <summary>詳細設定 (通常は不要)</summary>
+            <label>独自の Client ID <input id="clientId" autocomplete="off" spellcheck="false" placeholder="空欄なら標準を使用"></label>
+            <p>独自IDを使う場合、リダイレクトURLに <code id="redirect"></code> を登録してください。変更後は再ログインが必要です。</p>
+          </details>
+        </div>
+      </details>
+
+      <details class="box" id="ops-box"><summary>操作・通知 (ホットキー / 音 / ミニ表示)</summary><div class="inner" id="ops"></div></details>
+      <details class="box" id="upd-box"><summary>アプリについて・アップデート</summary><div class="inner" id="upd"></div></details>
+      <div class="bar"><button id="open-guide" class="ghost">❓ 使い方ガイドをもう一度見る</button></div>
+    </div>
+
+    <div id="pane-people" class="pane" hidden><div id="people" class="designer"></div></div>
+    <div id="pane-design" class="pane" hidden><div id="designer" class="designer"></div></div>
+    <div id="pane-cards" class="pane" hidden><div id="cards" class="designer"></div></div>
+  </aside>
+</main>
+<div id="guide" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="guide-title"></div>
+<script src="../web/overlay-themes.js"></script>
+<script src="../web/ops-defs.js"></script>
+<script src="../web/sfx.js"></script>
+<script src="../web/panel.js"></script>
+<script src="../web/card.js"></script>
+<script src="designer.js"></script>
+<script src="cards.js"></script>
+<script src="people.js"></script>
+<script src="ops.js"></script>
+<script src="guide.js"></script>
+<script src="renderer.js"></script>
+</body></html>

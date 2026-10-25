@@ -1,0 +1,44 @@
+# ■ 手動実行 (Actions タブ → Run workflow): Windows / macOS / Linux 向けを全てビルドし、Artifacts からダウンロードできます。
+# ■ バージョンタグ (例: v1.2.0) を push: ビルドして GitHub Releases に公開します。
+#    アプリの「自動アップデート」は、この Releases を見て新しい版を配ります。
+#    手順: package.json の version を上げる → コミット → `git tag v1.2.0 && git push --tags`
+name: build
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-latest, target: win }
+          - { os: macos-latest,   target: mac }
+          - { os: ubuntu-latest,  target: linux }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - name: Build (手動実行: 公開しない)
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        run: npm run dist:${{ matrix.target }}
+      - name: Build & Release (タグ: GitHub Releases に公開)
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: npm run release:${{ matrix.target }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sanka-queue-${{ matrix.os }}
+          path: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.zip
+            dist/*.AppImage
+            dist/latest*.yml
