@@ -97,7 +97,7 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "YOUR_GITHUB_USER",
+        "owner": "rumo-dev",
         "repo": "sanka-queue-manager",
         "releaseType": "release"
       }
