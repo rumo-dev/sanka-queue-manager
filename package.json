@@ -1,6 +1,6 @@
 {
   "name": "twitch-queue-manager",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Twitch参加型配信 キュー管理ツール (OBS連携対応)",
   "main": "main.js",
   "author": {
@@ -36,7 +36,7 @@
       "buildResources": "build",
       "output": "dist"
     },
-    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "artifactName": "SankaQueueManager-${version}-${os}-${arch}.${ext}",
     "files": [
       "main.js",
       "preload.js",
@@ -65,7 +65,8 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "perMachine": false
+      "perMachine": false,
+      "artifactName": "SankaQueueManager-Setup-${version}.${ext}"
     },
     "mac": {
       "target": [
@@ -101,6 +102,9 @@
         "repo": "sanka-queue-manager",
         "releaseType": "release"
       }
-    ]
+    ],
+    "portable": {
+      "artifactName": "SankaQueueManager-Portable-${version}.${ext}"
+    }
   }
 }

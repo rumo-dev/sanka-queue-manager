@@ -1,0 +1,87 @@
+---
+import { RELEASE_REPO } from '../config';
+const releasesUrl = `https://github.com/${RELEASE_REPO}/releases`;
+const configured = !RELEASE_REPO.startsWith('YOUR_GITHUB_USER');
+---
+<div class="dl" id="dl" data-repo={RELEASE_REPO} data-configured={String(configured)}>
+  <div class="dl-main" aria-live="polite">
+    <p class="dl-status" id="dl-status">最新版を確認しています…</p>
+    <a class="btn primary" id="dl-primary" href={releasesUrl} hidden>ダウンロード</a>
+    <p class="dl-meta" id="dl-meta"></p>
+  </div>
+  <div id="dl-mac" class="dl-mac" hidden>
+    <p class="dl-hint">お使いの Mac のチップを選んでください (アップルメニュー →「このMacについて」で確認できます)</p>
+  </div>
+  <details class="dl-all" id="dl-all-wrap" hidden>
+    <summary>すべてのダウンロード</summary>
+    <ul id="dl-all"></ul>
+  </details>
+  <noscript><p><a href={releasesUrl}>GitHub のリリースページからダウンロード</a>してください。</p></noscript>
+  <p class="dl-fallback"><a href={releasesUrl}>過去のバージョン・更新履歴 (GitHub)</a></p>
+</div>
+
+<style is:global>
+  .dl { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; display: flex; flex-direction: column; gap: 14px; max-width: 560px; }
+  .dl-main { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+  .dl-status { color: var(--dim); }
+  .dl-status.err { color: var(--warn); }
+  .dl-meta { color: var(--dim); font-size: 13px; }
+  .dl-hint { color: var(--dim); font-size: 13px; margin-bottom: 8px; }
+  .dl-mac .row, .dl-all ul { display: flex; gap: 10px; flex-wrap: wrap; }
+  .dl-all summary { cursor: pointer; color: var(--accent); font-weight: 700; }
+  .dl-all ul { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-direction: column; gap: 8px; }
+  .dl-all li { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  .dl-all li small { color: var(--dim); display: block; }
+  .dl-fallback { font-size: 13px; }
+</style>
+
+<script>
+  import { detectOS, pickPrimary, formatSize, formatDate, fetchLatest } from '../lib/releases.js';
+
+  const root = document.getElementById('dl') as HTMLElement;
+  const $ = (id: string) => document.getElementById(id) as HTMLElement;
+  const repo = root.dataset.repo as string;
+  const status = $('dl-status'), primary = $('dl-primary') as HTMLAnchorElement, meta = $('dl-meta');
+
+  const OS_NAME: Record<string, string> = { win: 'Windows', mac: 'macOS', linux: 'Linux', other: '' };
+  const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
+
+  function fail(msg: string) {
+    status.textContent = msg;
+    status.classList.add('err');
+  }
+
+  async function run() {
+    if (root.dataset.configured !== 'true') return fail('配布元の GitHub リポジトリが未設定です (src/config.ts の RELEASE_REPO)。');
+    let rel;
+    try { rel = await fetchLatest(repo); } catch { return fail('最新版を取得できませんでした。下の GitHub のリンクからダウンロードしてください。'); }
+    if (!rel || !rel.items.length) return fail('まだ公開されているバージョンがありません。');
+
+    const os = detectOS(navigator.userAgent, (navigator as any).userAgentData?.platform || navigator.platform || '');
+    const main = pickPrimary(os, rel.items);
+    status.textContent = `最新バージョン v${rel.version}`;
+    meta.textContent = [formatDate(rel.date), main ? formatSize(main.size) : ''].filter(Boolean).join(' ・ ');
+
+    if (main) {
+      primary.href = main.url;
+      primary.textContent = `${OS_NAME[os]} 版をダウンロード`;
+      primary.hidden = false;
+      meta.textContent = [`v${rel.version}`, formatDate(rel.date), formatSize(main.size)].filter(Boolean).join(' ・ ');
+      status.textContent = main.note;
+    } else if (os === 'mac') {
+      const box = $('dl-mac');
+      const row = document.createElement('div'); row.className = 'row';
+      rel.items.filter((i) => i.os === 'mac').forEach((i) => {
+        const a = document.createElement('a'); a.className = 'btn primary'; a.href = i.url; a.textContent = i.label; row.append(a);
+      });
+      box.append(row); box.hidden = false;
+    } else if (os === 'other') {
+      status.textContent = 'お使いの端末ではデスクトップ版は使えません。Windows / Mac / Linux のパソコンでこのページを開いてください。';
+    }
+
+    $('dl-all').innerHTML = rel.items.map((i) =>
+      `<li><span>${esc(i.label)}<small>${esc(i.note)}</small></span><a class="btn" href="${esc(i.url)}">${esc(formatSize(i.size) || 'ダウンロード')}</a></li>`).join('');
+    $('dl-all-wrap').hidden = false;
+  }
+  run();
+</script>
